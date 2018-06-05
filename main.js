@@ -22,8 +22,20 @@ database.ref("notes/").on("child_added", (snapshot)=>{
     const data = snapshot.val();
 
     const clone = template.cloneNode(true);
+    clone.querySelector("article").dataset.key = key;
     clone.querySelector("h1").textContent = data.header;
     clone.querySelector("div.description").textContent = data.description;
+    clone.querySelector("button.delete").addEventListener("click", e=>{
+        database.ref("notes/"+key).remove();
+    });
     app.appendChild(clone);
 
 });
+
+//listen for removal of data child_removed
+
+database.ref("notes/").on("child_removed", snapshot=>{
+    const key = snapshot.key;
+    let el = document.querySelector(`article[data-key=${key}]`);
+    el.remove();
+})
